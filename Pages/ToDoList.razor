@@ -1,0 +1,54 @@
+@page "/TodoList"
+<PageTitle>To-Do List</PageTitle>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="4">
+        <MudText Typo="Typo.h6" GutterBottom="true">TO-D0 LIST</MudText>
+        <MudPaper Width="100%">
+            <MudList Clickable="true">
+                @foreach(var item in items)
+                {
+                    <MudListItem @onclick="(() => RemoveListItem(item))" Text="@item" Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Primary" />
+                }
+            </MudList>
+        </MudPaper>
+        <MudTextField @bind-Value="TextValue" Label="Addtask" Variant="Variant.Outlined" Required="true" RequiredError="You have not added a task!" />
+        <MudButton Variant="Variant.Filled" @onclick="@AddListItem" Color="Color.Primary">Add Task</MudButton>
+        @if(DisplayWarning)
+        {
+            <MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(true))">This task already exists add a different task!</MudAlert>
+        }
+    </MudItem>
+</MudGrid>
+@code {
+    public string? TextValue { set; get; }
+    public List<string> items = new List<string>();
+
+    public bool DisplayWarning = false;
+
+     private void CloseMe(bool value)
+    {
+        if (value)
+        {
+            DisplayWarning = false;
+        }
+
+    }
+    
+    public async Task AddListItem()
+    {
+        if(!items.Contains(TextValue))
+        {
+            items.Add(TextValue);
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            DisplayWarning = true;
+        }
+    }
+    public async Task RemoveListItem(string item)
+    {
+        items.Remove(item);
+        await InvokeAsync(StateHasChanged);
+    }
+}
